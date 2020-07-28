@@ -79,11 +79,11 @@ void TrafficLight::cycleThroughPhases()
     // Also, the while-loop should use std::this_thread::sleep_for to wait 1ms between two cycles. 
     
     // random number generation with inlcusize max, min
-    const int min = 4, max = 6;
+    const int min = 4000, max = 6000;
     const int cycle_duration  = rand() % (max - min + 1) + min;
 
     // start time (current clock time)
-    auto start_time = std::chrono::high_resolution_clock::now();
+    auto start_time = std::chrono::system_clock::now();
 
     // infinite loop
     while(true) {
@@ -91,7 +91,7 @@ void TrafficLight::cycleThroughPhases()
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
         // elapsed time since start
-        std::chrono::duration<double> elapsed_time = std::chrono::high_resolution_clock::now() - start_time;
+        auto elapsed_time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - start_time);
 
         // check if elapsed time has passed the set cycle duration. If yes, send message to queue and reset cycle start time
         if (elapsed_time.count() >= cycle_duration) {
@@ -103,7 +103,7 @@ void TrafficLight::cycleThroughPhases()
             TrafficLightPhase message = TrafficLight::getCurrentPhase();
             _messages.send(std::move(message));
 
-            start_time = std::chrono::high_resolution_clock::now();
+            start_time = std::chrono::system_clock::now();
         }
     };
 }
